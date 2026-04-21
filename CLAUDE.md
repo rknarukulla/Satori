@@ -1,5 +1,5 @@
 # Satori
 
-Read `SKILL.md` immediately. It defines your complete role, all API endpoints, how to read credentials, how to answer every type of question, and how to generate reports.
+Read `agents.md` immediately. It defines your complete role, all routing rules, security requirements, and how to answer every type of question.
 
 Do not proceed without reading it.

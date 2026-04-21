@@ -1,8 +1,26 @@
 # Satori
 
-**Conversational Instagram intelligence — powered by Claude + Meta Graph API.**
+**Your Instagram data stays between you and Meta. No subscription. No dashboard. Just ask.**
 
-Ask your Instagram data anything. No Python. No dashboards. No setup beyond a one-time token. Just open this folder in Claude Code (Cowork) and ask.
+Every analytics tool on the market stores your Instagram data on their servers, charges you monthly, and makes you navigate a dashboard to find answers. Satori does none of that. Open this folder in any AI coding tool, ask a question in plain English, and get an answer — powered by your own Meta token, running entirely on your machine.
+
+Free. Open source. Private by architecture, not by policy.
+
+---
+
+## What you can ask
+
+```
+"How did my posts perform last week?"
+"What should I post this week?"
+"Write a caption for our new product launch."
+"Plan my content for May."
+"Analyze this post: https://www.instagram.com/p/..."
+"How are my stories doing?"
+"Give me a dashboard I can share with my team."
+```
+
+No forms to fill. No reports to schedule. No charts to navigate. Ask, get an answer, act.
 
 ---
 
@@ -15,7 +33,7 @@ Ask your Instagram data anything. No Python. No dashboards. No setup beyond a on
 - **Anomaly detection** — engagement drops, sentiment spikes, story completion changes
 - **HTML dashboards** — self-contained reports you can open in any browser or share with your team
 
-All data comes from Meta's official Graph API with your own token. Nothing leaves your machine.
+All data comes from Meta's official Graph API with your own token. Your Instagram credentials and account data are read locally and sent only to Meta's official API — never to a third-party analytics server, never stored in someone else's database. The AI conversation layer runs through your chosen AI tool (Claude, Cursor, etc.) under that tool's own privacy policy.
 
 ---
 
@@ -25,7 +43,7 @@ All data comes from Meta's official Graph API with your own token. Nothing leave
 
 Download or clone this repo. Open the folder in Claude Code (the desktop app or VS Code extension).
 
-Claude will read `SKILL.md` automatically and introduce itself as Satori.
+Your AI tool will read `agents.md` automatically and introduce itself as Satori.
 
 ### 2. Get a Meta access token
 
@@ -82,7 +100,7 @@ No Python. No local servers. No pip install. Claude is the orchestrator, the ana
 ```
 satori/
 ├── CLAUDE.md              ← auto-loaded by Claude Code
-├── SKILL.md               ← Claude's role definition and API guide
+├── agents.md              ← agent role definition and routing (tool-agnostic)
 ├── config.yaml.example    ← credentials template
 ├── config.yaml            ← your credentials (gitignored)
 │
@@ -135,7 +153,7 @@ Story data expires from the API in 24 hours — schedule a daily story fetch to 
 
 Satori is the first working example of a reusable pattern:
 
-**SKILL.md + config.yaml + Claude Cowork = conversational intelligence for any REST API**
+**agents.md + config.yaml + any capable AI tool = conversational intelligence for any REST API**
 
 See `docs/pattern-guide.md` for how to fork this for LinkedIn, YouTube, Shopify, Stripe, or any platform with a REST API.
 
@@ -147,7 +165,9 @@ Community forks built on this pattern: *(coming soon)*
 
 MIT License. Built by [@ravinarukulla](https://github.com/ravinarukulla) — used internally first, then shared.
 
-Contributions welcome. If you build a fork for another platform, open a PR to add it to the pattern guide.
+**Want to contribute?** Read [CONTRIBUTING.md](CONTRIBUTING.md) — you can improve the Instagram skill, build a fork for another platform, or just share feedback and ideas in [GitHub Discussions](../../discussions).
+
+Community forks built on this pattern: *(be the first — claim a platform in Discussions)*
 
 ---
 

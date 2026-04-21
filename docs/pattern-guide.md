@@ -8,9 +8,9 @@ Satori is an Instagram tool, but it's also an example of a reusable architecture
 
 Claude can call any REST API via WebFetch. It can read the JSON response, reason over it, chain multiple calls, write files, and generate HTML — all within a Cowork session. This means:
 
-> Any REST API + SKILL.md + Claude Cowork = a conversational intelligence product with zero local setup.
+> Any REST API + agents.md + a capable AI tool = a conversational intelligence product with zero local setup.
 
-No Python. No scripts. No servers. No install step. The user opens a folder, Claude reads SKILL.md, and the product is running.
+No Python. No scripts. No servers. No install step. The user opens a folder, the AI reads agents.md, and the product is running.
 
 ---
 
@@ -19,8 +19,10 @@ No Python. No scripts. No servers. No install step. The user opens a folder, Cla
 ```
 your-tool/
 │
-├── CLAUDE.md              ← tells Claude to read SKILL.md (one line)
-├── SKILL.md               ← Claude's complete role definition (the brain)
+├── CLAUDE.md              ← Claude Code adapter — tells Claude to read agents.md
+├── .cursorrules           ← Cursor adapter
+├── .github/copilot-instructions.md  ← Copilot adapter
+├── agents.md               ← Claude's complete role definition (the brain)
 ├── config.yaml.example    ← credentials template (gitignored when filled)
 ├── .gitignore             ← protects config.yaml and data/
 │
@@ -43,7 +45,7 @@ your-tool/
 
 ## How to fork this for a different platform
 
-### Step 1 — Rewrite SKILL.md
+### Step 1 — Rewrite agents.md
 
 This is the only file you need to fundamentally change. Replace:
 - The identity section (who Claude is in this context)
@@ -102,7 +104,7 @@ linkedin:
   organization_id: "1234567"
 ```
 
-Key SKILL.md changes:
+Key agents.md changes:
 - Base URL: `https://api.linkedin.com/v2/`
 - Auth header: `Authorization: Bearer {token}` (not query param)
 - Endpoints: `/organizationalEntityShareStatistics`, `/shares`, `/ugcPosts`
@@ -117,7 +119,7 @@ youtube:
   channel_id: "UC..."
 ```
 
-Key SKILL.md changes:
+Key agents.md changes:
 - Base URL: `https://www.googleapis.com/youtube/v3/`
 - Auth: `key={api_key}` query param
 - Endpoints: `/channels`, `/videos`, `/search`, `/videoCategories`
@@ -132,7 +134,7 @@ shopify:
   access_token: "shpat_..."
 ```
 
-Key SKILL.md changes:
+Key agents.md changes:
 - Base URL: `https://{shop}/admin/api/2024-01/`
 - Auth: `X-Shopify-Access-Token: {token}` header
 - Endpoints: `/orders.json`, `/products.json`, `/customers.json`
@@ -142,11 +144,11 @@ Key SKILL.md changes:
 
 ## The Llama layer is also portable
 
-The Llama API calls in SKILL.md are generic — they work for any metric narrative or vision task. The only things to change are the system prompt (domain-specific expertise) and the data you pass. The infrastructure is identical.
+The Llama API calls in agents.md are generic — they work for any metric narrative or vision task. The only things to change are the system prompt (domain-specific expertise) and the data you pass. The infrastructure is identical.
 
 ---
 
-## What makes SKILL.md work well
+## What makes agents.md work well
 
 After building Satori, here's what we learned about writing effective skill files:
 
@@ -156,6 +158,6 @@ After building Satori, here's what we learned about writing effective skill file
 
 **Define the output format precisely.** "Respond in plain English" is underspecified. Use example output structures in the prompt templates so Claude's responses are consistent.
 
-**Separate orchestration from templates.** SKILL.md handles the how-to and domain knowledge. The prompts/ files handle specific question patterns. This separation keeps SKILL.md readable.
+**Separate orchestration from templates.** agents.md handles the how-to and domain knowledge. The prompts/ files handle specific question patterns. This separation keeps agents.md readable.
 
 **Test with a real token before publishing.** The hardest part of every API tool is the credential setup. Run through token-setup.md yourself and update it every time you find a confusing step.

@@ -1,6 +1,6 @@
 # Skill: Onboarding
 
-Handles three scenarios: first-time setup, missing account_type, and cold start (new account with < 10 posts).
+Handles four scenarios: first-time setup, missing account_type, content cold start (< 10 posts), and audience cold start (< 50 followers but has post history).
 
 ---
 
@@ -44,14 +44,18 @@ Handles three scenarios: first-time setup, missing account_type, and cold start 
      brand_voice: ""
    ```
 
-5. Verify setup — call:
+7. Verify setup — call:
    ```
    GET /{account_id}?fields=name,username,followers_count,media_count&access_token={token}
    ```
-   Greet them: "You're connected, @{username}. {followers_count} followers, {media_count} posts. Let's get to work."
+   Greet them warmly, but tailor the message:
+   - If `followers_count > 0`: "You're connected, @{username}. {followers_count} followers, {media_count} posts. Let's get to work."
+   - If `followers_count == 0`: "You're connected, @{username}. {media_count} posts — your account is just getting its first audience. I've got a growth plan for you."
 
-6. If `media_count < 10` → continue to **Scenario C** immediately.
-7. Otherwise → read `skills/creator.md` or `skills/business.md` based on account_type and proceed.
+8. Route based on what the data shows:
+   - `media_count < 10` → **Scenario C** (content cold start)
+   - `media_count >= 10` and `followers_count < 50` → **Scenario D** (audience cold start)
+   - Otherwise → read `skills/creator.md` or `skills/business.md` and proceed normally.
 
 ---
 
@@ -115,3 +119,50 @@ The account is new or has very few posts. Data-driven analysis isn't possible ye
 - Don't fabricate engagement benchmarks from their nonexistent data
 - Don't run weekly summary (nothing meaningful to summarize)
 - Don't tell them what "works for their account" — use niche best practices instead, and say so explicitly
+
+---
+
+## Scenario D — Audience Cold Start (media_count ≥ 10, followers_count < 50)
+
+The account has content history but almost no audience yet. Metrics like reach, engagement rate, and "best time to post" are statistically meaningless at this scale — a single view skews everything. Do not treat this as a normal account.
+
+### What to tell the user
+> "You've got {media_count} posts to learn from — that's great. But with {followers_count} followers right now, your reach and engagement numbers are too small to measure reliably. Instead of tracking metrics, let's focus on getting your first audience. Once you cross ~50 followers, the data starts to mean something."
+
+### What Satori CAN do in audience cold start
+
+**Learn from existing content**
+- Fetch all posts and identify: most-used formats, caption patterns, posting frequency, niche themes
+- Use this as a content style baseline — not a performance baseline
+- "Here's what your content looks like — here's how to make it work harder for growth"
+
+**Growth-first strategy**
+- Shift all recommendations toward follower acquisition:
+  - Reels > carousels for discoverability (algorithm pushes Reels to non-followers)
+  - Hashtag strategy focused on niche reach, not community tags
+  - Engagement tactics: reply to comments in the first 30 min, engage with similar accounts daily
+  - Collaborations and Remix/Duet if relevant to niche
+
+**Caption and content generation**
+- Still works fully — use existing post style + niche best practices
+- Bias caption hooks toward curiosity and shareability (drives reach to new people)
+
+**Competitor benchmarks as a proxy**
+- Ask: "Who are 2–3 accounts in your niche with under 5K followers you admire?"
+- Use their public engagement patterns as a realistic benchmark for this growth stage
+
+### What to skip until followers_count ≥ 50
+- Weekly performance summaries (numbers are noise)
+- "Best time to post" from audience data (online_followers returns nothing useful)
+- Engagement rate benchmarking (single-digit sample sizes)
+- Anomaly detection (no baseline to compare against)
+
+### Milestone to watch for
+Tell the user explicitly:
+> "Check back when you hit 50 followers — that's when I can start giving you real data-driven advice. Until then, I'll focus on growth tactics."
+
+Update `config.yaml` with a note when this threshold is crossed:
+```yaml
+satori:
+  audience_mode: "growth"   # set to "normal" once followers >= 50
+```

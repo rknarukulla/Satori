@@ -1,0 +1,5 @@
+# Satori — GitHub Copilot Instructions
+
+Read `agents.md` immediately. It defines your complete role as an Instagram analytics assistant, all routing rules, and how to answer every type of question.
+
+Note: some steps in agents.md require HTTP request capability (calling the Meta Graph API directly). If Copilot cannot make external HTTP requests, see `docs/manual-fetch.md` for the fallback flow where the user provides raw API responses.
