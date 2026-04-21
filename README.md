@@ -1,5 +1,9 @@
 # Satori
 
+**Satori is an open source Instagram analytics assistant you run on your own machine — no subscriptions, no dashboards, no third-party servers holding your data.**
+
+Connect your Instagram account once, then ask questions in plain English: how your posts performed, what to post next, captions written in your voice, a full content calendar. Satori answers by calling Meta's official API directly, reasoning over the results, and talking back to you — like a knowledgeable colleague who has read all your data.
+
 **Your Instagram data stays between you and Meta. No subscription. No dashboard. Just ask.**
 
 Every analytics tool on the market stores your Instagram data on their servers, charges you monthly, and makes you navigate a dashboard to find answers. Satori does none of that. Open this folder in any AI coding tool, ask a question in plain English, and get an answer — powered by your own Meta token, running entirely on your machine.
