@@ -1,0 +1,16 @@
+# Credentials — never commit these
+config.yaml
+
+# Accumulated data snapshots (local only)
+data/*.json
+
+# Generated reports (optional — remove this line if you want to commit reports)
+reports/*.html
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp

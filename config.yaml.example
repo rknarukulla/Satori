@@ -1,0 +1,42 @@
+# Satori Configuration Template
+# ─────────────────────────────────────────────────────────────
+# 1. Copy this file:   cp config.yaml.example config.yaml
+# 2. Fill in your credentials below
+# 3. config.yaml is gitignored — it never leaves your machine
+# ─────────────────────────────────────────────────────────────
+
+meta:
+  # Your Meta Graph API long-lived token (starts with EAA...)
+  # Get one at: https://developers.facebook.com/tools/explorer/
+  # See docs/token-setup.md for step-by-step instructions
+  token: "EAA_PASTE_YOUR_TOKEN_HERE"
+
+  # Your Instagram Business Account ID (17 digits, starts with 17841...)
+  # Claude will help you find this during setup
+  account_id: "17841XXXXXXXXXX"
+
+  # Your Instagram handle (display only — used in report headers)
+  account_name: "yourhandle"
+
+llama:
+  # Optional: Llama API key for enhanced metric narrative and vision analysis
+  # Get one at: https://llama.developer.meta.com/
+  # Leave blank to use Claude-only analysis (still very good)
+  api_key: ""
+
+satori:
+  # Your timezone — used for scheduling and "best time to post" analysis
+  # Examples: America/New_York, America/Los_Angeles, Europe/London, Asia/Kolkata
+  timezone: "America/New_York"
+
+  # Optional: describe your brand's tone for caption generation
+  # Example: "friendly and relatable, uses we/us language, avoids jargon"
+  brand_voice: ""
+
+  # Optional: your content niche (helps with trend research)
+  # Example: "personal finance app for Gen Z"
+  niche: ""
+
+  # Auto-managed by Satori — tracks when platform docs were last checked
+  # Satori re-fetches Meta changelog and algorithm updates if older than 7 days
+  platform_last_checked: ""
