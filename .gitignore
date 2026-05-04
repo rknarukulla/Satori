@@ -1,5 +1,6 @@
 # Credentials — never commit these
 config.yaml
+credentials/
 
 # Accumulated data snapshots (local only)
 data/*.json

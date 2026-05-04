@@ -1,138 +1,166 @@
-# Skill: Stay Current
+# Skill: Stay Current — Docs & Warm-Up
 
-Loaded when the user asks about algorithms, latest features, recent changes, or when an API call returns an unexpected error that may indicate a platform change. Also loaded at the start of weekly/monthly reviews to ensure advice reflects current Instagram behaviour.
-
----
-
-## When to Load This Skill
-
-- User asks: "what's new", "has the algorithm changed", "why is my reach dropping", "are these tips still relevant", "what's working on Instagram right now"
-- An API endpoint returns a deprecation warning or unexpected error
-- Starting a weekly or monthly review (load once, skip if already loaded this session)
-- User mentions a feature or metric that isn't in `skills/api-reference.md`
+This skill handles two distinct scenarios. Read the trigger carefully and follow only the matching flow.
 
 ---
 
-## Step 1 — Check Meta's Official Changelog
+## Scenario A — Setup Doc Fetch (user is configuring a platform)
 
-WebFetch the Meta Graph API changelog to check for API version changes, deprecated endpoints, and new fields:
+**Trigger:** User says they want to add, set up, or configure a platform — OR a platform section is missing/placeholder in config.yaml and the user is asking about it.
 
+**Goal:** Fetch the *current* official setup docs for that platform before walking the user through configuration. The static `docs/` files in this repo may be outdated — always confirm against live sources first.
+
+**Rule:** Only fetch docs for the platform being set up. Do not fetch docs for other platforms.
+
+### Fetch by platform
+
+**Instagram / Meta:**
+```
+WebFetch: https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/overview
+WebSearch: "Meta Graph API Instagram long-lived token setup {current_year}"
+```
+
+**Google Play Store:**
+```
+WebFetch: https://developers.google.com/android-publisher/getting_started
+WebSearch: "Google Play Developer API service account setup {current_year}"
+```
+
+**Apple App Store:**
+```
+WebFetch: https://developer.apple.com/documentation/appstoreconnectapi/generating-tokens-for-api-requests
+WebSearch: "App Store Connect API key setup p8 {current_year}"
+```
+
+**LinkedIn:**
+```
+WebFetch: https://learn.microsoft.com/en-us/linkedin/marketing/community-management/organizations/organization-lookup-api
+WebSearch: "LinkedIn Pages API access token OAuth setup {current_year}"
+```
+
+After fetching, compare against the relevant `docs/{platform}-setup.md` file. If the live docs show a different step, UI label, or requirement, **follow the live version** — not the static file. Note any discrepancy to the user in one sentence.
+
+Cache the result immediately (see Step 5 format below) so the session warm-up doesn't re-fetch it.
+
+---
+
+## Scenario B — Session Warm-Up (platforms are already configured)
+
+**Trigger:** Session start, or user asks "has anything changed?", "are my docs current?", or a platform API returns an unexpected error.
+
+**Goal:** Check if anything changed since the last fetch. Fast on repeat sessions — use cache aggressively.
+
+### Step 1 — Determine which platforms to check
+
+Read `config.yaml`. Only check platforms with non-placeholder values:
+
+| Config field | Platform |
+|---|---|
+| `meta.token` not starting with `EAA_PASTE` | Instagram |
+| `playstore.package_name` not `com.example` | Play Store |
+| `appstore.key_id` not `XXXXXXXXXX` | App Store |
+| `linkedin.access_token` not starting with `AQX_PASTE` | LinkedIn |
+
+Tell the user: `"Warming up — checking {platform list}..."`
+
+### Step 2 — Check cache per platform
+
+For each platform, look for `data/platform-updates-{platform}-*.json` (platform = `instagram`, `playstore`, `appstore`, `linkedin`).
+
+- **≤ 7 days old:** Read the cached summary. Mark ✓ — no fetch needed.
+- **> 7 days old or missing:** Mark ⟳ — fetch needed.
+
+If all platforms are cache-fresh, skip to Step 4 immediately. No fetches, no delay.
+
+### Step 3 — Fetch changelogs only (for stale platforms)
+
+Fetch **changelog/release notes pages only** — not full API docs. These are small, structured pages that summarise what changed. That's all that's needed to know if anything is different.
+
+**Instagram:**
 ```
 WebFetch: https://developers.facebook.com/docs/graph-api/changelog
+WebFetch: https://developers.facebook.com/docs/instagram-platform/changelog
 ```
 
-Look for:
-- New API version (currently tracking v18.0 — flag if a newer version is available)
-- Deprecated endpoints or fields that Satori uses
-- New metrics or fields that could improve Satori's analysis
-- Breaking changes to auth or permission scopes
-
+**Play Store:**
 ```
-WebFetch: https://developers.facebook.com/docs/instagram-api/changelog
+WebFetch: https://developers.google.com/android-publisher/release-notes
 ```
 
-Look for:
-- Changes to Instagram-specific endpoints (media, insights, stories)
-- New insight metrics available
-- Changes to rate limits or token behaviour
-
----
-
-## Step 2 — Check for Instagram Algorithm Updates
-
-WebSearch for recent algorithm and platform behaviour changes:
-
+**App Store:**
 ```
-WebSearch: "Instagram algorithm update {current_year}"
-WebSearch: "Instagram reach algorithm changes {current_month} {current_year}"
-WebSearch: "Instagram Reels algorithm {current_year}"
+WebFetch: https://developer.apple.com/documentation/appstoreconnectapi/app_store_connect_api_release_notes
 ```
 
-Pull from authoritative sources only — prefer:
-- Instagram's official @creators account announcements
-- Meta Newsroom (newsroom.fb.com)
-- Social Media Examiner, Later, Hootsuite research blogs (secondary)
-
-Ignore: clickbait articles, SEO farms, posts with no cited source.
-
----
-
-## Step 3 — Check What's Currently Working
-
-WebSearch for current content performance patterns:
-
+**LinkedIn:**
 ```
-WebSearch: "what content is performing best on Instagram {current_month} {current_year}"
-WebSearch: "Instagram Reels vs carousel performance {current_year}"
-WebSearch: "best time to post Instagram {current_year}"
+WebFetch: https://learn.microsoft.com/en-us/linkedin/marketing/release-notes/
 ```
 
-Cross-reference findings with the user's own account data when available. Account data always beats general trends — general trends are the fallback when account history is thin.
+For each, extract only:
+- Latest API version number (if versioned)
+- Any deprecated endpoints that Satori uses
+- Any new fields worth using
+- Breaking changes to auth or scopes
 
----
+Do **not** summarise the full changelog to the user — extract only what's actionable.
 
-## Step 4 — Synthesise and Apply
+### Step 4 — Check algorithm / store signals (only if platform is in the current question)
 
-After fetching, produce a short internal summary (not shown to user unless they ask):
+Run WebSearch only for the platform the user is actively asking about — not all of them.
 
 ```
-API version: v{X} — Satori currently uses v18.0 — [up to date / update needed]
-Deprecated: [list any endpoints Satori uses that are deprecated]
-New metrics: [any new fields worth using]
-Algorithm signal: [1-2 sentence summary of current reach/engagement drivers]
-Content format: [what format is currently favoured by the algorithm]
+WebSearch: "{platform} algorithm update {current_month} {current_year}"
+WebSearch: "{platform} ranking changes {current_year}"
 ```
 
-Apply findings immediately to the current session:
-- If a better API version exists, use it in subsequent WebFetch calls
-- If a deprecated endpoint is needed, use the replacement and note it
-- If algorithm guidance differs from what's in `skills/creator.md` or `skills/business.md`, follow the fresher signal and flag the discrepancy to the user briefly
+Preferred sources: official newsrooms, platform developer blogs, Later/Hootsuite research. Skip SEO farms and unattributed posts.
 
----
+**Skip this step** if the user's question is purely about data (e.g. "what are my impressions?") — algorithm research adds tokens with no benefit for a metrics lookup.
 
-## Step 5 — Update the Session Snapshot
+### Step 5 — Save cache (one file per platform, only if fetched)
 
-Write a lightweight update log to `data/platform-updates-{YYYY-MM-DD}.json`:
+```
+data/platform-updates-{platform}-{YYYY-MM-DD}.json
+```
+
+Store only the synthesised summary — not raw fetched content:
 
 ```json
 {
+  "platform": "{name}",
   "checked_at": "{ISO timestamp}",
-  "api_version_latest": "v{X}",
-  "api_version_satori": "v18.0",
+  "api_version_latest": "{version or null}",
   "deprecated_endpoints": [],
-  "new_metrics": [],
-  "algorithm_summary": "...",
-  "sources": ["url1", "url2"]
+  "new_fields": [],
+  "auth_changes": false,
+  "algorithm_summary": "one sentence or null",
+  "action_needed": false,
+  "notes": "anything the user should know, or null"
 }
 ```
 
-On future sessions, check if this file exists and was written within the last 7 days. If yes, read it instead of re-fetching — saves time and API calls. If older than 7 days, re-fetch.
+### Step 6 — Report to user
+
+Replace the "Warming up..." message with a single line.
+
+**Nothing changed:**
+> "Ready — {platform list} all current."
+
+**Something changed on one platform:**
+> "Ready. One note: {platform} {specific change in one sentence}. Adjusted for this session."
+
+**Deprecated endpoint found:**
+> "Ready. {Platform} deprecated [{endpoint}] — switching to the updated version automatically."
+
+One or two sentences maximum. Do not summarise changelogs unprompted. The user came to analyse their metrics.
 
 ---
 
-## What to Tell the User
+## What NOT to do
 
-Keep it brief. After running this skill, mention only what actually changed or matters:
-
-**If everything is current:**
-> "I've checked Meta's latest docs and recent algorithm signals — nothing material has changed since last week. Carrying on with current guidance."
-
-**If something changed:**
-> "Quick note: Instagram recently [specific change]. I've adjusted my recommendations for this session accordingly. [One sentence on what that means for them specifically.]"
-
-**If a deprecated endpoint is found:**
-> "Meta has deprecated the [{endpoint}] call I was about to use. Switching to the updated version — no action needed from you."
-
-Don't over-report. The user doesn't need a full changelog summary unless they ask for it.
-
----
-
-## Scheduled Freshness Check
-
-Recommend the user set up a weekly check using Claude Code's Schedule skill:
-
-```
-/schedule every Monday at 8am: check for Meta API and Instagram algorithm updates and summarise anything that affects my content strategy
-```
-
-This runs before the weekly summary, so the Monday report always reflects current platform behaviour.
+- **Don't fetch full API reference docs during warm-up** — changelogs only. Full docs are for setup (Scenario A).
+- **Don't run algorithm search for platforms not in the current question** — waste of tokens.
+- **Don't re-fetch if cache is under 7 days** — trust the cache.
+- **Don't report "all clear" with a list of every platform checked** — if nothing changed, one line is enough.
+- **Don't block the user's question** — if a fetch fails or times out, log it silently and proceed. Never make the user wait on a doc check.

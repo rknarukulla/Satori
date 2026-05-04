@@ -24,6 +24,60 @@ llama:
   # Leave blank to use Claude-only analysis (still very good)
   api_key: ""
 
+playstore:
+  # Google Play Developer API credentials
+  # See docs/playstore-setup.md for step-by-step instructions
+
+  # Path to your service account JSON key file (never paste key contents here)
+  # Place it in credentials/ — that folder is gitignored
+  service_account_key_path: "credentials/playstore-service-account.json"
+
+  # Your app's package name (e.g. com.yourcompany.yourapp)
+  package_name: "com.example.yourapp"
+
+  # Display name used in reports
+  app_name: "Your App Name"
+
+appstore:
+  # Apple App Store Connect API credentials
+  # See docs/appstore-setup.md for step-by-step instructions
+
+  # Path to your .p8 EC private key — download once from App Store Connect, never paste here
+  # Place it in credentials/ — that folder is gitignored
+  key_path: "credentials/appstore-key.p8"
+
+  # 10-character Key ID — App Store Connect > Users & Access > Integrations > App Store Connect API
+  key_id: "XXXXXXXXXX"
+
+  # Issuer ID (UUID) — shown at the top of the same App Store Connect page
+  issuer_id: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+
+  # Numeric Apple ID for your app — App Store Connect > My Apps > App Information > Apple ID
+  # Note: this is NOT the bundle ID (com.example.app) — it's a plain number like 123456789
+  app_apple_id: "123456789"
+
+  # Vendor Number — App Store Connect > Payments and Financial Reports
+  # Required for sales/download reports; leave blank to skip sales data
+  vendor_number: "12345678"
+
+  # Display name used in reports
+  app_name: "Your App Name"
+
+linkedin:
+  # LinkedIn Pages API credentials
+  # See docs/linkedin-setup.md for step-by-step instructions
+
+  # OAuth2 access token — expires every 60 days, refresh via LinkedIn Developer Portal
+  # Get one at: https://www.linkedin.com/developers/apps
+  access_token: "AQX_PASTE_YOUR_TOKEN_HERE"
+
+  # Your LinkedIn Company Page numeric ID (not the vanity URL slug)
+  # Find it: LinkedIn > Admin tools > Super admin view — the number in the URL
+  org_id: "12345678"
+
+  # Your company page display name (used in reports)
+  org_name: "Your Company Name"
+
 satori:
   # Your timezone — used for scheduling and "best time to post" analysis
   # Examples: America/New_York, America/Los_Angeles, Europe/London, Asia/Kolkata
